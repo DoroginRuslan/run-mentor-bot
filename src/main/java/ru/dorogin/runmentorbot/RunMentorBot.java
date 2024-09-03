@@ -6,16 +6,20 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import ru.dorogin.runmentorbot.commands.Command;
+import ru.dorogin.runmentorbot.commands.CommandFactory;
 
 
 @Slf4j
 public class RunMentorBot extends TelegramLongPollingBot {
     private final String botUsername;
     private final String botToken;
+    private final CommandFactory commandFactory;
 
     public RunMentorBot(String botUsername, String botToken) {
         this.botUsername = botUsername;
         this.botToken = botToken;
+        commandFactory = new CommandFactory();
     }
 
     @Override
@@ -31,12 +35,14 @@ public class RunMentorBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         log.info(update.toString());
-        Message msg = update.getMessage();
+        Message message = update.getMessage();
         try {
-            sendMessage(msg.getChatId().toString(), msg.getText());
+            Command command = commandFactory.getCommand(message);
+            String reply = command.execute(message);
+            sendMessage(message.getChatId().toString(), reply);
         } catch (RuntimeException e) {
-            log.error("Error generating or sending QR code: {}", e.getMessage());
-            sendMessage(String.valueOf(msg.getChatId()), "Ошибка при генерации QR-кода.");
+            log.error("Ошибка обработки сообщения: {}", e.getMessage());
+            sendMessage(message.getChatId().toString(), "Ошибка");
         }
     }
 
