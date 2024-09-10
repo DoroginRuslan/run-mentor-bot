@@ -1,3 +1,5 @@
 /config.properties
 /logs/*
 /target/*
+/mydatabase.db
+/data/mydatabase.mv.db

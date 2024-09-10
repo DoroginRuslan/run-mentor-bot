@@ -9,7 +9,7 @@ public class CommandFactory {
         return switch (getCommandPrefix(message)) {
             case "/start" -> new StartCommand();
             case "/add_run" -> new AddRunCommand();
-            default -> null;
+            default -> new ErrorCommand();
         };
     }
 
