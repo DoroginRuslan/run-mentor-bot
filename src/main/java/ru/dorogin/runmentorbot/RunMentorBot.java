@@ -18,13 +18,7 @@ import ru.dorogin.runmentorbot.commands.CommandFactory;
 public class RunMentorBot extends TelegramLongPollingBot {
 
     private final TelegramBotConfig telegramBotConfig;
-//    private final CommandFactory commandFactory;
-
-//    public RunMentorBot(String botUsername, String botToken) {
-//        this.botUsername = botUsername;
-//        this.botToken = botToken;
-//        commandFactory = new CommandFactory();
-//    }
+    private final CommandFactory commandFactory;
 
     @Override
     public String getBotUsername() {
@@ -41,8 +35,8 @@ public class RunMentorBot extends TelegramLongPollingBot {
         log.info(update.toString());
         Message message = update.getMessage();
         try {
-//            Command command = commandFactory.getCommand(message);
-            String reply = "OK";
+            Command command = commandFactory.getCommand(message);
+            String reply = command.execute(message);
             sendMessage(message.getChatId().toString(), reply);
         } catch (RuntimeException e) {
             log.error("Ошибка обработки сообщения: {}", e.getMessage());
