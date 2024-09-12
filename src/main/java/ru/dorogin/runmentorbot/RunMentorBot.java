@@ -16,20 +16,20 @@ import ru.dorogin.runmentorbot.commands.UserRequest;
 
 @Component
 @Slf4j
-@RequiredArgsConstructor
 public class RunMentorBot extends TelegramLongPollingBot {
 
     private final TelegramBotConfig telegramBotConfig;
     private final CommandFactory commandFactory;
 
-    @Override
-    public String getBotUsername() {
-        return telegramBotConfig.getUsername();
+    public RunMentorBot(TelegramBotConfig telegramBotConfig, CommandFactory commandFactory) {
+        super(telegramBotConfig.getToken());
+        this.telegramBotConfig = telegramBotConfig;
+        this.commandFactory = commandFactory;
     }
 
     @Override
-    public String getBotToken() {
-        return telegramBotConfig.getToken();
+    public String getBotUsername() {
+        return telegramBotConfig.getUsername();
     }
 
     @Override
