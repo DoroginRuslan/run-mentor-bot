@@ -1,22 +1,21 @@
 package ru.dorogin.runmentorbot.commands;
 
-import org.telegram.telegrambots.meta.api.objects.Message;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
+import java.util.*;
 
+@Component
+@RequiredArgsConstructor
 public class CommandFactory {
-    public Command getCommand(Message message) {
-        return switch (getCommandPrefix(message)) {
-            case "/start" -> new StartCommand();
-            case "/add_run" -> new AddRunCommand();
-            default -> new ErrorCommand();
-        };
-    }
 
-    private String getCommandPrefix(Message message) {
-        String text = message.getText()
-                .trim();
-        String[] parts = text.split(" ");
-        return Arrays.stream(parts).findFirst().orElse(null);
+    private final Map<String, Command> commandMap;
+
+    public Command getCommand(String commandPrefix) {
+        try {
+            return commandMap.getOrDefault(commandPrefix, commandMap.get("error"));
+        } catch (Exception e) {
+            return commandMap.get("error");
+        }
     }
 }

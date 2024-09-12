@@ -1,10 +1,11 @@
 package ru.dorogin.runmentorbot.commands;
 
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.springframework.stereotype.Component;
 
+@Component("error")
 public class ErrorCommand implements Command{
     @Override
-    public String execute(Message message) {
+    public String execute(UserRequest userRequest) {
         return "Неизвестная команда";
     }
 }

@@ -10,21 +10,22 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.dorogin.runmentorbot.commands.Command;
 import ru.dorogin.runmentorbot.commands.CommandFactory;
+import ru.dorogin.runmentorbot.commands.TextCommandParser;
+import ru.dorogin.runmentorbot.commands.UserRequest;
 
 
 @Component
 @Slf4j
-@RequiredArgsConstructor
 public class RunMentorBot extends TelegramLongPollingBot {
 
     private final TelegramBotConfig telegramBotConfig;
-//    private final CommandFactory commandFactory;
+    private final CommandFactory commandFactory;
 
-//    public RunMentorBot(String botUsername, String botToken) {
-//        this.botUsername = botUsername;
-//        this.botToken = botToken;
-//        commandFactory = new CommandFactory();
-//    }
+    public RunMentorBot(TelegramBotConfig telegramBotConfig, CommandFactory commandFactory) {
+        super(telegramBotConfig.getToken());
+        this.telegramBotConfig = telegramBotConfig;
+        this.commandFactory = commandFactory;
+    }
 
     @Override
     public String getBotUsername() {
@@ -32,17 +33,13 @@ public class RunMentorBot extends TelegramLongPollingBot {
     }
 
     @Override
-    public String getBotToken() {
-        return telegramBotConfig.getToken();
-    }
-
-    @Override
     public void onUpdateReceived(Update update) {
         log.info(update.toString());
         Message message = update.getMessage();
         try {
-//            Command command = commandFactory.getCommand(message);
-            String reply = "OK";
+            UserRequest userRequest = TextCommandParser.parseCommand(message.getText());
+            Command command = commandFactory.getCommand(userRequest.getCommandPrefix());
+            String reply = command.execute(userRequest);
             sendMessage(message.getChatId().toString(), reply);
         } catch (RuntimeException e) {
             log.error("Ошибка обработки сообщения: {}", e.getMessage());
@@ -57,7 +54,7 @@ public class RunMentorBot extends TelegramLongPollingBot {
         try {
             execute(message); // метод отправки сообщения
         } catch (TelegramApiException e) {
-            e.printStackTrace(); // обработка исключения
+            log.error("Ошибка отправки сообщения", e);
         }
     }
 }
