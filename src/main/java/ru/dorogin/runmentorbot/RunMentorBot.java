@@ -10,6 +10,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.dorogin.runmentorbot.commands.Command;
 import ru.dorogin.runmentorbot.commands.CommandFactory;
+import ru.dorogin.runmentorbot.commands.TextCommandParser;
+import ru.dorogin.runmentorbot.commands.UserRequest;
 
 
 @Component
@@ -35,8 +37,9 @@ public class RunMentorBot extends TelegramLongPollingBot {
         log.info(update.toString());
         Message message = update.getMessage();
         try {
-            Command command = commandFactory.getCommand(message);
-            String reply = command.execute(message);
+            UserRequest userRequest = TextCommandParser.parseCommand(message.getText());
+            Command command = commandFactory.getCommand(userRequest.getCommandPrefix());
+            String reply = command.execute(userRequest);
             sendMessage(message.getChatId().toString(), reply);
         } catch (RuntimeException e) {
             log.error("Ошибка обработки сообщения: {}", e.getMessage());
@@ -51,7 +54,7 @@ public class RunMentorBot extends TelegramLongPollingBot {
         try {
             execute(message); // метод отправки сообщения
         } catch (TelegramApiException e) {
-            e.printStackTrace(); // обработка исключения
+            log.error("Ошибка отправки сообщения", e);
         }
     }
 }
