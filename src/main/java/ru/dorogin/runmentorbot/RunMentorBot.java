@@ -1,6 +1,8 @@
 package ru.dorogin.runmentorbot;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -10,26 +12,28 @@ import ru.dorogin.runmentorbot.commands.Command;
 import ru.dorogin.runmentorbot.commands.CommandFactory;
 
 
+@Component
 @Slf4j
+@RequiredArgsConstructor
 public class RunMentorBot extends TelegramLongPollingBot {
-    private final String botUsername;
-    private final String botToken;
-    private final CommandFactory commandFactory;
 
-    public RunMentorBot(String botUsername, String botToken) {
-        this.botUsername = botUsername;
-        this.botToken = botToken;
-        commandFactory = new CommandFactory();
-    }
+    private final TelegramBotConfig telegramBotConfig;
+//    private final CommandFactory commandFactory;
+
+//    public RunMentorBot(String botUsername, String botToken) {
+//        this.botUsername = botUsername;
+//        this.botToken = botToken;
+//        commandFactory = new CommandFactory();
+//    }
 
     @Override
     public String getBotUsername() {
-        return botUsername;
+        return telegramBotConfig.getUsername();
     }
 
     @Override
     public String getBotToken() {
-        return botToken;
+        return telegramBotConfig.getToken();
     }
 
     @Override
@@ -37,8 +41,8 @@ public class RunMentorBot extends TelegramLongPollingBot {
         log.info(update.toString());
         Message message = update.getMessage();
         try {
-            Command command = commandFactory.getCommand(message);
-            String reply = command.execute(message);
+//            Command command = commandFactory.getCommand(message);
+            String reply = "OK";
             sendMessage(message.getChatId().toString(), reply);
         } catch (RuntimeException e) {
             log.error("Ошибка обработки сообщения: {}", e.getMessage());
