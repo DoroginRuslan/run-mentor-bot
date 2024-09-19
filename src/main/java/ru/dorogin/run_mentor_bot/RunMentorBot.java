@@ -11,6 +11,8 @@ import ru.dorogin.run_mentor_bot.commands.Command;
 import ru.dorogin.run_mentor_bot.commands.CommandFactory;
 import ru.dorogin.run_mentor_bot.commands.TextCommandParser;
 import ru.dorogin.run_mentor_bot.commands.UserRequest;
+import ru.dorogin.run_mentor_bot.dao.dto.User;
+import ru.dorogin.run_mentor_bot.services.UserService;
 
 
 @Component
@@ -19,11 +21,13 @@ public class RunMentorBot extends TelegramLongPollingBot {
 
     private final TelegramBotConfig telegramBotConfig;
     private final CommandFactory commandFactory;
+    private final UserService userService;
 
-    public RunMentorBot(TelegramBotConfig telegramBotConfig, CommandFactory commandFactory) {
+    public RunMentorBot(TelegramBotConfig telegramBotConfig, CommandFactory commandFactory, UserService userService) {
         super(telegramBotConfig.getToken());
         this.telegramBotConfig = telegramBotConfig;
         this.commandFactory = commandFactory;
+        this.userService = userService;
     }
 
     @Override
@@ -36,12 +40,14 @@ public class RunMentorBot extends TelegramLongPollingBot {
         log.info(update.toString());
         Message message = update.getMessage();
         try {
+            User user = userService.findUser(message.getFrom());
             UserRequest userRequest = TextCommandParser.parseCommand(message.getText());
+            userRequest.setUser(user);
             Command command = commandFactory.getCommand(userRequest.getCommandPrefix());
             String reply = command.execute(userRequest);
             sendMessage(message.getChatId().toString(), reply);
         } catch (RuntimeException e) {
-            log.error("Ошибка обработки сообщения: {}", e.getMessage());
+            log.error("Ошибка обработки сообщения: ", e);
             sendMessage(message.getChatId().toString(), "Ошибка");
         }
     }

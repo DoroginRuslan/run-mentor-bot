@@ -1,9 +1,9 @@
 package ru.dorogin.run_mentor_bot.dao.dto;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 
@@ -11,15 +11,12 @@ import java.time.LocalDateTime;
 @Table(name = "Users")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
+@Accessors(chain = true)
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", unique = true, nullable = false)
     private Long id;
-
-    @Column(name = "telegram_id", unique = true, nullable = false)
-    private Long telegramId;
 
     @Column(name = "username", length = 50)
     private String username;
@@ -32,9 +29,4 @@ public class User {
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
 }
