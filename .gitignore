@@ -1,0 +1,7 @@
+/.idea/
+/gradle/
+/logs/
+/application.properties
+/build/
+/.gradle/
+/db/
