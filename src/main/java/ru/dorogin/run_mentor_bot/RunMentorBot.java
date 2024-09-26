@@ -39,25 +39,23 @@ public class RunMentorBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         log.info(update.toString());
         Message message = update.getMessage();
+        SendMessage sm;
         try {
-            User user = userService.findUser(message.getFrom());
+            User user = userService.findUser(message);
             UserRequest userRequest = TextCommandParser.parseCommand(message.getText());
             userRequest.setUser(user);
             Command command = commandFactory.getCommand(userRequest.getCommandPrefix());
-            String reply = command.execute(userRequest);
-            sendMessage(message.getChatId().toString(), reply);
+            sm = command.execute(userRequest);
         } catch (RuntimeException e) {
             log.error("Ошибка обработки сообщения: ", e);
-            sendMessage(message.getChatId().toString(), "Ошибка");
+            sm = new SendMessage(message.getChatId().toString(), "Ошибка");
         }
+        sendMessage(sm);
     }
 
-    public void sendMessage(String chatId, String text) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText(text);
+    private void sendMessage(SendMessage reply) {
         try {
-            execute(message); // метод отправки сообщения
+            execute(reply); // метод отправки сообщения
         } catch (TelegramApiException e) {
             log.error("Ошибка отправки сообщения", e);
         }

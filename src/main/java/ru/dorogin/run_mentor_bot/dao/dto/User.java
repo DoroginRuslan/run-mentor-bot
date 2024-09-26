@@ -27,6 +27,9 @@ public class User {
     @Column(name = "last_name", length = 50)
     private String lastName;
 
+    @Column(name = "chat_id")
+    private Long chatId;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 }

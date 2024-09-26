@@ -3,6 +3,7 @@ CREATE TABLE Users (
     username VARCHAR(50),
     first_name VARCHAR(50),
     last_name VARCHAR(50),
+    chat_id BIGINT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

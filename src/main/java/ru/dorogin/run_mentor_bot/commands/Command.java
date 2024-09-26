@@ -1,5 +1,7 @@
 package ru.dorogin.run_mentor_bot.commands;
 
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+
 public interface Command {
-    String execute(UserRequest userRequest);
+    SendMessage execute(UserRequest userRequest);
 }
